@@ -1,5 +1,6 @@
 package com.homen.mobilemanager.file.util;
 
+import android.os.Environment;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -13,12 +14,21 @@ public class FileUtil {
 //        return getDirectoryFileList(E)
 //    }
 
+    public static String getRootDirectory(){
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+
+    /**
+     * 获得一个路径下的所有文件
+     * @param path
+     * @return
+     */
     public static File[] getDirectoryFileList(String path){
         if(TextUtils.isEmpty(path)){
             return null;
         }
         File file = new File(path);
-        if(file == null){
+        if(file == null || !file.exists()){
             return null;
         }
         if(file.isDirectory()) {
@@ -28,16 +38,21 @@ public class FileUtil {
         return null;
     }
 
+    /**
+     * 获取一个文件的父文件绝对路径
+     * @param path
+     * @return
+     */
     public static String getParentPath(String path){
         if(TextUtils.isEmpty(path)){
             return null;
         }
         File file = new File(path);
-        if(file == null){
+        if(file == null || !file.exists()){
             return null;
         }
         File parentFile = file.getParentFile();
-        if(parentFile != null) {
+        if(parentFile != null && parentFile.exists()) {
             return file.getParentFile().getAbsolutePath();
         }
         return null;
