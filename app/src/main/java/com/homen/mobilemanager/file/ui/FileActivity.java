@@ -39,7 +39,7 @@ public class FileActivity extends AppCompatActivity{
 
     private void initData(){
         mFileBeans = new ArrayList<FileBean>();
-        mRecyclerViewFile.setFilePath(Environment.getExternalStorageDirectory().getAbsolutePath());
+        mRecyclerViewFile.setFilePath(FileUtil.getRootDirectory());
     }
 
     private void findViews(){

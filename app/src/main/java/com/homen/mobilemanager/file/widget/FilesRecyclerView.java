@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.homen.mobilemanager.R;
+import com.homen.mobilemanager.file.util.FileIconUtil;
 import com.homen.mobilemanager.file.util.FileUtil;
 
 import java.io.File;
@@ -112,15 +113,14 @@ public class FilesRecyclerView extends RecyclerView{
                     String path = (String)v.getTag(R.id.tag_id_path);
                     String parentPath = mCurrentPath;
                     File file = (File)v.getTag(R.id.tag_id_file);
-                    File[] files = FileUtil.getDirectoryFileList(file);
 
                     if(mOnFileItemClickListener != null){
                         mOnFileItemClickListener.onClick(file, path, parentPath, v);
                     }
 
-                    if(files != null){
+                    if(FileUtil.isDirectory(file)) {
+                        mFileListData = FileUtil.getDirectoryFileList(file);
                         mCurrentPath = path;
-                        mFileListData = files;
                         notifyDataSetChanged();
                     }
 
@@ -135,9 +135,13 @@ public class FilesRecyclerView extends RecyclerView{
 
             public ViewHolder(View itemView) {
                 super(itemView);
+
                 mContentView = itemView.findViewById(R.id.content);
+
                 mFileName = (TextView)itemView.findViewById(R.id.tv_file_name);
+
                 mContentView.setOnClickListener(FilesRecyclerViewAdapter.this);
+
                 mFileicon = (ImageView)itemView.findViewById(R.id.iv_file_icon);
             }
         }
@@ -150,15 +154,23 @@ public class FilesRecyclerView extends RecyclerView{
 
         @Override
         public void onBindViewHolder(FilesRecyclerViewAdapter.ViewHolder holder, int position) {
-            File file = new File(mFileListData[position].getAbsolutePath());
 
-            holder.mContentView.setTag(R.id.tag_id_path, mFileListData[position].getAbsolutePath());
+            File file = mFileListData[position];
+
+            if(file == null){
+                return;
+            }
+
+            holder.mContentView.setTag(R.id.tag_id_path, file.getAbsolutePath());
             holder.mContentView.setTag(R.id.tag_id_file, file);
-            holder.mFileName.setText(mFileListData[position].getName());
+
+            holder.mFileName.setText(file.getName());
+
             if(FileUtil.isDirectory(file)){
-                holder.mFileicon.setImageResource(R.mipmap.folder);
+                holder.mFileicon.setImageResource(R.mipmap.file_icon_folder);
             }else{
-                holder.mFileicon.setImageResource(R.mipmap.txt);
+                int icon = FileIconUtil.getIntance().getFileicon(file.getAbsolutePath());
+                holder.mFileicon.setImageResource(icon);
             }
 
         }
