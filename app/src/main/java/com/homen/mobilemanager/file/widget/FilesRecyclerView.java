@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.homen.mobilemanager.R;
@@ -107,10 +108,10 @@ public class FilesRecyclerView extends RecyclerView{
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.tv_file_name:
+                case R.id.content:
                     String path = (String)v.getTag(R.id.tag_id_path);
                     String parentPath = mCurrentPath;
-                    File file = new File(path);
+                    File file = (File)v.getTag(R.id.tag_id_file);
                     File[] files = FileUtil.getDirectoryFileList(file);
 
                     if(mOnFileItemClickListener != null){
@@ -128,12 +129,16 @@ public class FilesRecyclerView extends RecyclerView{
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder{
+            public View mContentView;
             public TextView mFileName;
+            public ImageView mFileicon;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+                mContentView = itemView.findViewById(R.id.content);
                 mFileName = (TextView)itemView.findViewById(R.id.tv_file_name);
-                mFileName.setOnClickListener(FilesRecyclerViewAdapter.this);
+                mContentView.setOnClickListener(FilesRecyclerViewAdapter.this);
+                mFileicon = (ImageView)itemView.findViewById(R.id.iv_file_icon);
             }
         }
 
@@ -145,8 +150,17 @@ public class FilesRecyclerView extends RecyclerView{
 
         @Override
         public void onBindViewHolder(FilesRecyclerViewAdapter.ViewHolder holder, int position) {
-            holder.mFileName.setTag(R.id.tag_id_path,mFileListData[position].getAbsolutePath());
+            File file = new File(mFileListData[position].getAbsolutePath());
+
+            holder.mContentView.setTag(R.id.tag_id_path, mFileListData[position].getAbsolutePath());
+            holder.mContentView.setTag(R.id.tag_id_file, file);
             holder.mFileName.setText(mFileListData[position].getName());
+            if(FileUtil.isDirectory(file)){
+                holder.mFileicon.setImageResource(R.mipmap.folder);
+            }else{
+                holder.mFileicon.setImageResource(R.mipmap.txt);
+            }
+
         }
 
         @Override

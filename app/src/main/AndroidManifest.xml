@@ -8,7 +8,7 @@
     <application
         android:name=".HomenApp"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/default_fileicon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity android:name=".file.ui.FileActivity" >
