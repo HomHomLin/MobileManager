@@ -38,6 +38,21 @@ public class FileUtil {
         return null;
     }
 
+    public static File[] getDirectoryFileList(File file){
+        if(isDirectory(file)){
+            File[] files = file.listFiles();
+            return files;
+        }
+        return null;
+    }
+
+    public static boolean isDirectory(File file){
+        if(file != null && file.exists() && file.isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 获取一个文件的父文件绝对路径
      * @param path

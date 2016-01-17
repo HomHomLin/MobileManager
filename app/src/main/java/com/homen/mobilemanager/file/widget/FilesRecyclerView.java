@@ -23,9 +23,10 @@ public class FilesRecyclerView extends RecyclerView{
 
     private FilesRecyclerViewAdapter mAdapter;
     private String mCurrentPath;
+    private int mCurrentY;
 
     public interface OnFileItemClickListener{
-        public void onClick(View v);
+        public void onClick(File file, String path, String parentPath, View v);
     }
 
     public FilesRecyclerView(Context context) {
@@ -44,17 +45,30 @@ public class FilesRecyclerView extends RecyclerView{
     public void setFilePath(String path){
         this.mCurrentPath = path;
         mFileListData = FileUtil.getDirectoryFileList(mCurrentPath);
+        notifyDataSetChanged();
+    }
+
+    private void notifyDataSetChanged(){
         if(mAdapter != null){
             mAdapter.notifyDataSetChanged();
         }
+        mCurrentY = 0;
     }
 
     public String getCurrentPath(){
         return this.mCurrentPath;
     }
 
+    public int getCurrentScrollY(){
+        return this.mCurrentY;
+    }
+
     public File[] getFiles(){
         return this.mFileListData;
+    }
+
+    public int getCurrentPosition(){
+        return mLinearLayoutManager.findFirstVisibleItemPosition();
     }
 
     public void setOnFileItemClickListener(OnFileItemClickListener onFileItemClickListener){
@@ -62,14 +76,32 @@ public class FilesRecyclerView extends RecyclerView{
     }
 
     private void initFilesRecyclerView(){
+        mCurrentPath = "";
+        mCurrentY = 0;
+        mFileListData = null;
         mAdapter = new FilesRecyclerViewAdapter();
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         this.setHasFixedSize(true);
         this.setLayoutManager(mLinearLayoutManager);
         this.setAdapter(mAdapter);
+        this.addOnScrollListener(new FilesRecyclerViewOnScrollListener());
     }
 
-    public class FilesRecyclerViewAdapter extends
+    private class FilesRecyclerViewOnScrollListener extends
+            RecyclerView.OnScrollListener{
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            mCurrentY = dy + mCurrentY;
+        }
+    }
+
+    private class FilesRecyclerViewAdapter extends
             RecyclerView.Adapter<FilesRecyclerViewAdapter.ViewHolder> implements OnClickListener{
 
         @Override
@@ -77,17 +109,20 @@ public class FilesRecyclerView extends RecyclerView{
             switch (v.getId()){
                 case R.id.tv_file_name:
                     String path = (String)v.getTag(R.id.tag_id_path);
-                    File[] files = FileUtil.getDirectoryFileList(path);
+                    String parentPath = mCurrentPath;
+                    File file = new File(path);
+                    File[] files = FileUtil.getDirectoryFileList(file);
+
+                    if(mOnFileItemClickListener != null){
+                        mOnFileItemClickListener.onClick(file, path, parentPath, v);
+                    }
+
                     if(files != null){
                         mCurrentPath = path;
                         mFileListData = files;
-                        if(mAdapter != null) {
-                            mAdapter.notifyDataSetChanged();
-                        }
+                        notifyDataSetChanged();
                     }
-                    if(mOnFileItemClickListener != null){
-                        mOnFileItemClickListener.onClick(v);
-                    }
+
                     break;
             }
         }

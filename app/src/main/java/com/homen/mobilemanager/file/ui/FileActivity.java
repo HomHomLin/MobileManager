@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.homen.mobilemanager.R;
+import com.homen.mobilemanager.file.FileBean;
 import com.homen.mobilemanager.file.util.FileUtil;
 import com.homen.mobilemanager.file.widget.FilesRecyclerView;
 import com.homen.mobilemanager.log.HomenLoger;
@@ -26,6 +27,8 @@ public class FileActivity extends AppCompatActivity{
     private FilesRecyclerView mRecyclerViewFile;
     private TextView mBtnReturn;
 
+    private ArrayList<FileBean> mFileBeans;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,7 @@ public class FileActivity extends AppCompatActivity{
     }
 
     private void initData(){
+        mFileBeans = new ArrayList<FileBean>();
         mRecyclerViewFile.setFilePath(Environment.getExternalStorageDirectory().getAbsolutePath());
     }
 
@@ -46,10 +50,35 @@ public class FileActivity extends AppCompatActivity{
                 String parent_path = FileUtil.getParentPath(mRecyclerViewFile.getCurrentPath());
                 if(parent_path != null) {
                     mRecyclerViewFile.setFilePath(parent_path);
+                    resetLastRecyclerViewPos();
                 }
             }
         });
         mRecyclerViewFile = (FilesRecyclerView)this.findViewById(R.id.rv_file);
+        mRecyclerViewFile.setOnFileItemClickListener(new FilesRecyclerView.OnFileItemClickListener() {
+            @Override
+            public void onClick(File file, String path, String parentPath, View v) {
+                if(FileUtil.isDirectory(file)) {
+                    FileBean fileBean = new FileBean();
+                    fileBean.mFilePath = parentPath;
+                    fileBean.mPosition = mRecyclerViewFile.getCurrentScrollY();
+                    mFileBeans.add(fileBean);
+                }
+            }
+        });
+    }
+
+    /**
+     * 回复到上一个parent的停留位置
+     */
+    private void resetLastRecyclerViewPos(){
+        if(mFileBeans != null && mFileBeans.size() > 0){
+            FileBean fileBean = mFileBeans.get(mFileBeans.size() - 1);
+            if(mRecyclerViewFile != null){
+                mRecyclerViewFile.scrollBy(0, fileBean.mPosition);
+            }
+            mFileBeans.remove(mFileBeans.size() - 1);
+        }
     }
 
 }
