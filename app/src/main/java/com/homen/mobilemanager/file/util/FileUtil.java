@@ -16,6 +16,10 @@ public class FileUtil {
     }
 
     public static String getRootDirectory(){
+        return Environment.getRootDirectory().getAbsolutePath();
+    }
+
+    public static String getExternalStorageDirectory(){
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 

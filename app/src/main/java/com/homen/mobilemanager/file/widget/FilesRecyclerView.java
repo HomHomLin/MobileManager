@@ -28,6 +28,13 @@ public class FilesRecyclerView extends RecyclerView{
     private int mCurrentY;
 
     public interface OnFileItemClickListener{
+        /**
+         *
+         * @param file 被点击的文件file对象
+         * @param path 被点击文件的路径
+         * @param parentPath 被点击文件的父路径
+         * @param v 被点击的view
+         */
         public void onClick(File file, String path, String parentPath, View v);
     }
 
@@ -83,6 +90,7 @@ public class FilesRecyclerView extends RecyclerView{
         mFileListData = null;
         mAdapter = new FilesRecyclerViewAdapter();
         mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         this.setHasFixedSize(true);
         this.setLayoutManager(mLinearLayoutManager);
         this.setAdapter(mAdapter);

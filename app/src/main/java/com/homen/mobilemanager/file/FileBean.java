@@ -6,4 +6,5 @@ package com.homen.mobilemanager.file;
 public class FileBean {
     public String mFilePath;
     public int mPosition;//文件上次滑动停留的位置
+    public String mTitle;//用于显示该path的名字标签
 }
