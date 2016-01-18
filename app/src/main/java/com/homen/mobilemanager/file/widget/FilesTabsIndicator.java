@@ -24,6 +24,12 @@ public class FilesTabsIndicator extends RecyclerView{
 
     private ArrayList<FileBean> mFileBeanList;
 
+    private OnTabClickListener mOnTabClickListener;
+
+    public interface OnTabClickListener{
+        public void onClick(FileBean fileBean,View view, int pos);
+    }
+
     public FilesTabsIndicator(Context context) {
         this(context,null);
     }
@@ -35,6 +41,10 @@ public class FilesTabsIndicator extends RecyclerView{
     public FilesTabsIndicator(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initFilesTabsIndicator();
+    }
+
+    public void setOnTabClickListener(OnTabClickListener listener){
+        this.mOnTabClickListener = listener;
     }
 
     public void initFilesTabsIndicator(){
@@ -55,6 +65,7 @@ public class FilesTabsIndicator extends RecyclerView{
         if(mFilesTabIndicatorAdapter != null){
             mFilesTabIndicatorAdapter.notifyDataSetChanged();
         }
+        this.scrollToPosition(mFileBeanList.size() - 1);
     }
 
     public void removeItem(int position){
@@ -67,7 +78,20 @@ public class FilesTabsIndicator extends RecyclerView{
         notifyDataSetChanged();
     }
 
-    private class FilesTabIndicatorAdapter extends RecyclerView.Adapter<FilesTabIndicatorAdapter.ViewHolder>{
+    private class FilesTabIndicatorAdapter extends RecyclerView.Adapter<FilesTabIndicatorAdapter.ViewHolder> implements OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.tab_name:
+                    FileBean fileBean = (FileBean)v.getTag(R.id.tag_id_file_bean);
+                    int position = (int)v.getTag(R.id.tag_id_position);
+                    if(mOnTabClickListener != null){
+                        mOnTabClickListener.onClick(fileBean, v, position);
+                    }
+                    break;
+            }
+        }
 
         public class ViewHolder extends RecyclerView.ViewHolder{
             public TextView mTabName;
@@ -75,6 +99,7 @@ public class FilesTabsIndicator extends RecyclerView{
             public ViewHolder(View itemView) {
                 super(itemView);
                 mTabName = (TextView)itemView.findViewById(R.id.tab_name);
+                mTabName.setOnClickListener(FilesTabIndicatorAdapter.this);
             }
         }
 
@@ -94,6 +119,8 @@ public class FilesTabsIndicator extends RecyclerView{
                 return;
             }
             holder.mTabName.setText(fileBean.mTitle);
+            holder.mTabName.setTag(R.id.tag_id_file_bean,fileBean);
+            holder.mTabName.setTag(R.id.tag_id_position,position);
         }
 
         @Override

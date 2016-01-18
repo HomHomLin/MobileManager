@@ -40,32 +40,31 @@ public class FileActivity extends AppCompatActivity{
     }
 
     private void initData(){
-        initFileBeanData();
-        mRecyclerViewFile.setFilePath(FileUtil.getRootDirectory());
+        mRecyclerViewFile.setFilePath(FileUtil.getExternalStorageDirectory());
+        mFileBeans = FileUtil.getAllParentFileBeanWithCurrent(mRecyclerViewFile.getCurrentPath());
         mFilesTabsIndicator.setData(this.mFileBeans);
-    }
-
-    private void initFileBeanData(){
-        mFileBeans = new ArrayList<FileBean>();
-        //添加一个root目录下的filebean
-        addFileBeanToData("我的手机",
-                FileUtil.getRootDirectory(),
-                0);
-        addFileBeanToData("sdcard",
-                FileUtil.getExternalStorageDirectory(),
-                0);
     }
 
     private void findViews(){
         mFilesTabsIndicator = (FilesTabsIndicator)this.findViewById(R.id.indicator_file_tab);
+        mFilesTabsIndicator.setOnTabClickListener(new FilesTabsIndicator.OnTabClickListener() {
+            @Override
+            public void onClick(FileBean fileBean, View view, int pos) {
+                if(!fileBean.mFilePath.equals(mRecyclerViewFile.getCurrentPath())) {
+                    //如果点击的是当前目录，就不执行
+                    mRecyclerViewFile.setFilePath(fileBean.mFilePath);
+                    resetRecyclerViewPos(pos);
+                }
+            }
+        });
         mBtnReturn = (TextView)this.findViewById(R.id.tv_return_parent);
         mBtnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String parent_path = FileUtil.getParentPath(mRecyclerViewFile.getCurrentPath());
-                if(parent_path != null) {
+                if (parent_path != null) {
                     mRecyclerViewFile.setFilePath(parent_path);
-                    resetLastRecyclerViewPos();
+                    resetRecyclerViewPos(mFileBeans.size() - 2);
                 }
             }
         });
@@ -74,7 +73,7 @@ public class FileActivity extends AppCompatActivity{
             @Override
             public void onClick(File file, String path, String parentPath, View v) {
                 if (FileUtil.isDirectory(file)) {
-                    addFileBeanToData(file.getName(), parentPath, mRecyclerViewFile.getCurrentScrollY());
+                    addFileBeanToData(file.getName(), path, mRecyclerViewFile.getCurrentScrollY());
                 }
             }
         });
@@ -89,16 +88,14 @@ public class FileActivity extends AppCompatActivity{
         mFilesTabsIndicator.setData(this.mFileBeans);
     }
 
-    /**
-     * 回复到上一个parent的停留位置
-     */
-    private void resetLastRecyclerViewPos(){
-        if(mFileBeans != null && mFileBeans.size() > 1){
-            FileBean fileBean = mFileBeans.get(mFileBeans.size() - 1);
+    private void resetRecyclerViewPos(int pos){
+        pos = pos +1;
+        if(mFileBeans != null && mFileBeans.size() > 0){
+            FileBean fileBean = mFileBeans.get(pos);
             if(mRecyclerViewFile != null){
                 mRecyclerViewFile.scrollBy(0, fileBean.mPosition);
             }
-            mFileBeans.remove(mFileBeans.size() - 1);
+            mFileBeans.subList(pos, mFileBeans.size()).clear();
         }
         mFilesTabsIndicator.setData(this.mFileBeans);
     }

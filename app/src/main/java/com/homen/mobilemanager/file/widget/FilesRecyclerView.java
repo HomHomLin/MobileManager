@@ -10,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.homen.mobilemanager.R;
+import com.homen.mobilemanager.file.FileBean;
 import com.homen.mobilemanager.file.util.FileIconUtil;
 import com.homen.mobilemanager.file.util.FileUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by linhonghong on 16/1/17.
@@ -60,8 +62,10 @@ public class FilesRecyclerView extends RecyclerView{
     private void notifyDataSetChanged(){
         if(mAdapter != null){
             mAdapter.notifyDataSetChanged();
+            mCurrentY = 0;
+            this.scrollToPosition(0);
+
         }
-        mCurrentY = 0;
     }
 
     public String getCurrentPath(){
@@ -129,7 +133,7 @@ public class FilesRecyclerView extends RecyclerView{
                     if(FileUtil.isDirectory(file)) {
                         mFileListData = FileUtil.getDirectoryFileList(file);
                         mCurrentPath = path;
-                        notifyDataSetChanged();
+                        FilesRecyclerView.this.notifyDataSetChanged();
                     }
 
                     break;

@@ -3,20 +3,25 @@ package com.homen.mobilemanager.file.util;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.homen.mobilemanager.file.FileBean;
+
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by linhonghong on 2015/12/30.
  */
 public class FileUtil {
     public static final char separatorChar;
+    public static final String separator;
 
     static {
         separatorChar = System.getProperty("file.separator", "/").charAt(0);
+        separator = String.valueOf(separatorChar);
     }
 
     public static String getRootDirectory(){
-        return Environment.getRootDirectory().getAbsolutePath();
+        return "/";
     }
 
     public static String getExternalStorageDirectory(){
@@ -56,6 +61,78 @@ public class FileUtil {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 带有当前目录的filebean集合
+     * @param path
+     * @return
+     */
+    public static ArrayList<FileBean> getAllParentFileBeanWithCurrent(String path){
+        ArrayList<FileBean> allParent = getAllParentFileBean(path);
+        if(allParent == null){
+            allParent = new ArrayList<>();
+        }
+        FileBean fileBean = new FileBean();
+        String fileName = getFileName(path);
+        if(TextUtils.isEmpty(fileName)){
+            fileBean.mTitle = path;
+        }else{
+            fileBean.mTitle = fileName;
+        }
+        fileBean.mPosition = 0;
+        fileBean.mFilePath = path;
+        allParent.add(fileBean);
+        return allParent;
+    }
+
+    public static ArrayList<FileBean> getAllParentFileBean(String path){
+        ArrayList<FileBean> allParent = null;
+        do{
+            String parent = getParentPath(path);
+            if(!TextUtils.isEmpty(parent)){
+                if(allParent == null){
+                    allParent = new ArrayList<>();
+                }
+                FileBean fileBean = new FileBean();
+                String fileName = getFileName(parent);
+                if(TextUtils.isEmpty(fileName)){
+                    fileBean.mTitle = parent;
+                }else{
+                    fileBean.mTitle = fileName;
+                }
+                fileBean.mPosition = 0;
+                fileBean.mFilePath = parent;
+                allParent.add(0,fileBean);
+            }
+            path = parent;
+        }while(!TextUtils.isEmpty(path));
+        return allParent;
+    }
+
+    public static String getFileName(String path) {
+        int separatorIndex = path.lastIndexOf(separator);
+        return (separatorIndex < 0) ? path : path.substring(separatorIndex + 1, path.length());
+    }
+
+    /**
+     * 获得一个路径的所有父亲路径
+     * @param path
+     * @return
+     */
+    public static ArrayList<String> getAllParentPath(String path){
+        ArrayList<String> allParent = null;
+        do{
+            String parent = getParentPath(path);
+            if(!TextUtils.isEmpty(parent)){
+                if(allParent == null){
+                    allParent = new ArrayList<>();
+                }
+                allParent.add(parent);
+            }
+            path = parent;
+        }while(!TextUtils.isEmpty(path));
+        return allParent;
     }
 
     /**
