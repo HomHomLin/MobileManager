@@ -94,6 +94,7 @@ public class FilesRecyclerView extends RecyclerView{
         mCurrentY = 0;
         mFileListData = null;
         mAdapter = new FilesRecyclerViewAdapter();
+        this.setItemAnimator(null);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         this.setHasFixedSize(true);
@@ -183,10 +184,10 @@ public class FilesRecyclerView extends RecyclerView{
                 holder.mFileicon.loadView(null, R.mipmap.file_icon_folder);
             }else if(FileUtil.isImage(file)){
                 int icon = FileIconUtil.getIntance().getFileicon(file.getAbsolutePath());
-                holder.mFileicon.loadView(file.getAbsolutePath(),icon);
+                holder.mFileicon.loadView(file.getAbsolutePath(), icon);
             }else{
                 int icon = FileIconUtil.getIntance().getFileicon(file.getAbsolutePath());
-                holder.mFileicon.loadView(null,icon);
+                holder.mFileicon.loadView(null, icon);
             }
 
         }

@@ -49,6 +49,33 @@ public class FileUtil {
         return null;
     }
 
+    public static File[] filenamesToFiles(String[] filenames) {
+        if (filenames == null) {
+            return null;
+        }
+        int count = filenames.length;
+        File[] result = new File[count];
+        for (int i = 0; i < count; ++i) {
+            result[i] = new File(filenames[i]);
+        }
+        return result;
+    }
+
+    public static String[] getDirectoryFileListName(String path){
+        if(TextUtils.isEmpty(path)){
+            return null;
+        }
+        File file = new File(path);
+        if(file == null || !file.exists()){
+            return null;
+        }
+        if(file.isDirectory()) {
+            String[] files = file.list();
+            return files;
+        }
+        return null;
+    }
+
     public static File[] getDirectoryFileList(File file){
         if(isDirectory(file)){
             File[] files = file.listFiles();
