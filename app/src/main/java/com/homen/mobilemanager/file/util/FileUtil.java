@@ -2,6 +2,7 @@ package com.homen.mobilemanager.file.util;
 
 import android.os.Environment;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import com.homen.mobilemanager.file.FileBean;
 
@@ -207,5 +208,117 @@ public class FileUtil {
         } else {
             return null;
         }
+    }
+
+    private static String getMimeType(File file) {
+        return getMimeType(file.getName());
+    }
+
+    private static String getMimeType(String name) {
+        String extension = getFileExt(name);
+        if (TextUtils.isEmpty(extension)) {
+            return null;
+        }
+        extension = extension.toLowerCase();
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    }
+
+    public static boolean isImage(String name) {
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("image/");
+    }
+
+    public static boolean isImage(File file) {
+        return isImage(file.getName());
+    }
+
+    public static boolean isVideo(String name) {
+        String ext = getFileExt(name);
+        if (TextUtils.isEmpty(ext)) {
+            return false;
+        }
+        if (ext.equalsIgnoreCase("mp4")
+                || ext.equalsIgnoreCase("m4v")
+                || ext.equalsIgnoreCase("3gp")
+                || ext.equalsIgnoreCase("mov")
+                || ext.equalsIgnoreCase("rmvb")
+                || ext.equalsIgnoreCase("wmv")
+                || ext.equalsIgnoreCase("avi")
+                || ext.equalsIgnoreCase("wmv")) {
+            return true;
+        }
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("video/");
+    }
+
+    public static boolean isVideo(File file) {
+        return isVideo(file.getName());
+    }
+
+    public static boolean isApk(String name) {
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("application/vnd.android.package-archive");
+    }
+
+    public static boolean isApk(File file) {
+        return isApk(file.getName());
+    }
+
+    public static boolean isAudio(String name) {
+        String ext = getFileExt(name);
+        if (TextUtils.isEmpty(ext)) {
+            return false;
+        }
+        if (ext.equalsIgnoreCase("m4r")) {
+            return true;
+        }
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("audio/")
+                || mimeType.equals("application/ogg")
+                || mimeType.equals("application/x-ogg");
+    }
+
+    public static boolean isAudio(File file) {
+        return isAudio(file.getName());
+    }
+
+    public static boolean isArchive(String name) {
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("application/x-tar")
+                || mimeType.startsWith("application/zip")
+                || mimeType.startsWith("application/x-rar-compressed")
+                || mimeType.startsWith("application/rar");
+    }
+
+    public static boolean isArchive(File file) {
+        return isArchive(file.getName());
+    }
+
+    public static boolean isText(String name) {
+        String mimeType = getMimeType(name);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("text/plain")
+                || mimeType.equals("text/html");
+    }
+
+    public static boolean isText(File file) {
+        return isText(file.getName());
     }
 }

@@ -3,6 +3,8 @@ package com.homen.mobilemanager;
 import android.app.Application;
 import android.util.Log;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.homen.mobilemanager.log.HomenLoger;
 import com.homen.mobilemanager.log.MainLog4jIniter;
 
@@ -25,6 +27,7 @@ public class HomenApp extends Application{
         super.onCreate();
         mApplication = this;
         initLog4j();
+        initFresco();
         HomenLoger.getLogger().enableLog(true);
     }
 
@@ -35,5 +38,13 @@ public class HomenApp extends Application{
 //            level = Level.INFO;
 //        }
         new MainLog4jIniter(HomenApp.getApplication()).init(level);
+    }
+
+    public void initFresco(){
+//        ImagePipelineConfig frescoConfig = OkHttpImagePipelineConfigFactory
+//                .newBuilder(getApplication(), MyHttpMgr.Instance().mHttpClient)
+//                .build();
+//        Fresco.initialize(getApplication(), frescoConfig);
+        Fresco.initialize(getApplication());
     }
 }

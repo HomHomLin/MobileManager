@@ -13,6 +13,7 @@ import com.homen.mobilemanager.R;
 import com.homen.mobilemanager.file.FileBean;
 import com.homen.mobilemanager.file.util.FileIconUtil;
 import com.homen.mobilemanager.file.util.FileUtil;
+import com.homen.mobilemanager.file.widget.fresco.FrescoImageView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -143,7 +144,7 @@ public class FilesRecyclerView extends RecyclerView{
         public class ViewHolder extends RecyclerView.ViewHolder{
             public View mContentView;
             public TextView mFileName;
-            public ImageView mFileicon;
+            public FrescoImageView mFileicon;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -154,7 +155,7 @@ public class FilesRecyclerView extends RecyclerView{
 
                 mContentView.setOnClickListener(FilesRecyclerViewAdapter.this);
 
-                mFileicon = (ImageView)itemView.findViewById(R.id.iv_file_icon);
+                mFileicon = (FrescoImageView)itemView.findViewById(R.id.iv_file_icon);
             }
         }
 
@@ -179,10 +180,13 @@ public class FilesRecyclerView extends RecyclerView{
             holder.mFileName.setText(file.getName());
 
             if(FileUtil.isDirectory(file)){
-                holder.mFileicon.setImageResource(R.mipmap.file_icon_folder);
+                holder.mFileicon.loadView(null, R.mipmap.file_icon_folder);
+            }else if(FileUtil.isImage(file)){
+                int icon = FileIconUtil.getIntance().getFileicon(file.getAbsolutePath());
+                holder.mFileicon.loadView(file.getAbsolutePath(),icon);
             }else{
                 int icon = FileIconUtil.getIntance().getFileicon(file.getAbsolutePath());
-                holder.mFileicon.setImageResource(icon);
+                holder.mFileicon.loadView(null,icon);
             }
 
         }
